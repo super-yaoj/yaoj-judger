@@ -1,0 +1,10 @@
+#include "lib.polib"
+
+POLICY main {
+  USE basic_allow,
+  ALLOW {
+    execve, dup3, fcntl, getcwd, rt_sigaction, getgid, getegid, geteuid, getuid
+  }
+}
+
+USE main DEFAULT KILL
