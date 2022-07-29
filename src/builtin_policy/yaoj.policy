@@ -3,7 +3,7 @@
 POLICY main {
   USE basic_allow,
   ALLOW {
-    execve, dup3, fcntl, getcwd, rt_sigaction, getgid, getegid, geteuid, getuid
+    execve, dup3, fcntl, getcwd, rt_sigaction, getgid, getegid, geteuid, getuid, dup
   }
 }
 
