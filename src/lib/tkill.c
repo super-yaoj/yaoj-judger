@@ -62,29 +62,12 @@ int start_killer_after_fork(yjudger_ctxt_t ctxt) {
   pthread_attr_init(&attr);
   pthread_attr_setstacksize(&attr, TKILL_STACK_SIZE);
 
-  struct tkill_ctxt tctxt = {
-      .pid = ctxt->pchild,
-      .time = ctxt->rctxt->real_time,
-  };
+  struct tkill_ctxt *tctxt = malloc(sizeof(struct tkill_ctxt));
+  tctxt->pid = ctxt->pchild;
+  tctxt->time = ctxt->rctxt->real_time;
 
-  int flag = pthread_create(&tid, &attr, timeout_killer, (void *)(&tctxt));
-  // if (flag == EAGAIN) { // retry once
-  //   LOG_WARN(
-  //       "tkill create failed EAGAIN, retry with double stack size (%d
-  //       bytes)\n", TKILL_STACK_SIZE * 2);
-  //   pthread_attr_init(&attr);
-  //   pthread_attr_setstacksize(&attr, TKILL_STACK_SIZE * 2);
-  //   flag = pthread_create(&tid, NULL, timeout_killer, (void *)(&tctxt));
-  // }
-  // if (flag != 0) {
-  //   // make sure pgid has set for child
-  //   killpg(tctxt.pid, SIGKILL);
-  //   LOG_ERROR("tkill create failed(%d)", flag);
-  //   struct rlimit rl;
-  //   getrlimit(RLIMIT_NPROC, &rl);
-  //   LOG_DEBUG("nproc limit: soft=%d, hard=%d", rl.rlim_cur, rl.rlim_max);
-  //   yreturn(E_TKILL_PTHREAD);
-  // }
+  LOG_DEBUG("create timeout killer time=%d", tctxt->time);
+  int flag = pthread_create(&tid, &attr, timeout_killer, (void *)(tctxt));
   LOG_DEBUG("tkill create succeed (flag = %d)", flag);
   ctxt->tid = tid; // maybe not thread safe
   return 0;
